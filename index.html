@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+    <style>
+        @font-face {
+            font-family: 'IRANSansFaNum';
+            src: url('https://cdn.jsdelivr.net/gh/rastikerdar/sahel-font@v3.4.0/dist/Sahel-FD.eot');
+            src: url('https://cdn.jsdelivr.net/gh/rastikerdar/sahel-font@v3.4.0/dist/Sahel-FD.eot?#iefix') format('embedded-opentype'),
+                 url('https://cdn.jsdelivr.net/gh/rastikerdar/sahel-font@v3.4.0/dist/Sahel-FD.woff2') format('woff2'),
+                 url('https://cdn.jsdelivr.net/gh/rastikerdar/sahel-font@v3.4.0/dist/Sahel-FD.woff') format('woff'),
+                 url('https://cdn.jsdelivr.net/gh/rastikerdar/sahel-font@v3.4.0/dist/Sahel-FD.ttf') format('truetype');
+            font-weight: normal;
+        }
+        body {
+            font-family: 'IRANSansFaNum', 'Vazirmatn', sans-serif;
+            background-color: #f0f2f5;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#066194',
+                        gold: '#d2ab67',
+                        dark: '#191919',
+                        light: '#ffffff',
+                        gray: {
+                            100: '#f7fafc',
+                            200: '#edf2f7',
+                            300: '#e2e8f0',
+                            400: '#cbd5e0',
+                            500: '#a0aec0',
+                            600: '#718096',
+                            700: '#4a5568',
+                            800: '#2d3748',
+                            900: '#1a202c',
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['IRANSansFaNum', 'Vazirmatn', 'Montserrat', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+<script type="importmap">
+{
+  "imports": {
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.6.3",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "axios": "https://esm.sh/axios@^1.7.2"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
