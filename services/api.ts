@@ -5,8 +5,10 @@ import { User, Category, Product } from '../types';
 // This client assumes you are running json-server on localhost port 3001.
 // Run `npx json-server --watch db.json --port 3001` in your project root.
 const apiClient = axios.create({
-  baseURL: '/api',  // فقط مسیر نسبی به API Routes
+  baseURL: 'https://logamall-club.vercel.app/api/', // آدرس سرور خود در ورسل
+  timeout: 10000, // Timeout به مدت 10 ثانیه
 });
+
 
 // // --- Auth ---
 // export const login = async (username: string, password: string): Promise<User | null> => {
