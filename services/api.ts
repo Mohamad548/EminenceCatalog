@@ -1,78 +1,89 @@
-
+import { BASE_URL } from '@/pages/URL/url';
+import { Product } from '@/types';
 import axios from 'axios';
-
+ 
 const apiClient = axios.create({
-  baseURL: '/',  // آدرس و پورت بک‌اند
+  baseURL: BASE_URL, // آدرس سرور بک‌اند
 });
 
 export async function login(username: string, password: string) {
   try {
-    const response = await apiClient.post('/api/login', { username, password });
+    const response = await apiClient.post('api/auth/login', { username, password });
     return response.data; // پاسخ موفق (کاربر) یا خطا
   } catch (error) {
-
     return null;
   }
 }
 
-// // --- Categories ---
-// export const getCategories = async (): Promise<Category[]> => {
-//     const response = await apiClient.get<Category[]>('/categories');
-//     return response.data;
-// };
+// --- Categories ---
+export interface Category {
+  id: number;
+  name: string;
+}
 
-// export const addCategory = async (name: string): Promise<Category> => {
-//     const response = await apiClient.post<Category>('/categories', { name });
-//     return response.data;
-// };
+// گرفتن همه دسته‌ها
+export const getCategories = async (): Promise<Category[] | null> => {
+  try {
+    const response = await apiClient.get('api/categories');
+    return response.data;
+  } catch (error) {
+    console.error('Failed to get categories:', error);
+    return null;
+  }
+};
 
-// export const updateCategory = async (id: number, name: string): Promise<Category> => {
-//     const response = await apiClient.patch<Category>(`/categories/${id}`, { name });
-//     return response.data;
-// };
+// اضافه کردن دسته جدید
+export const addCategory = async (name: string): Promise<Category> => {
+  const response = await apiClient.post('api/categories', { name });
+  return response.data;
+};
 
-// export const deleteCategory = async (id: number): Promise<boolean> => {
-//     // Replicate original logic: delete associated products first.
-//     const productsResponse = await apiClient.get<Product[]>(`/products?categoryId=${id}`);
-//     const productsToDelete = productsResponse.data;
-    
-//     // Use Promise.all to delete them in parallel for efficiency.
-//     await Promise.all(productsToDelete.map(p => apiClient.delete(`/products/${p.id}`)));
+// به‌روزرسانی دسته
+export const updateCategory = async (
+  id: number,
+  name: string
+): Promise<Category> => {
+  const response = await apiClient.patch(`api/categories/${id}`, { name });
+  return response.data;
+};
 
-//     // Then, delete the category itself.
-//     await apiClient.delete(`/categories/${id}`);
-//     return true; // axios throws on non-2xx status, so if we reach here, it was successful.
-// };
+// حذف دسته و محصولات مرتبط
+export const deleteCategory = async (id: number): Promise<boolean> => {
+  // ابتدا محصولات مرتبط حذف شده‌اند در بک‌اند، پس فقط درخواست حذف دسته می‌فرستیم
+  await apiClient.delete(`api/categories/${id}`);
+  return true;
+};
+// --- Products ---
 
+export const addProduct = async (formData: FormData): Promise<Product> => {
+  const response = await apiClient.post('api/products', formData);
+  return response.data;
+};
 
-// // --- Products ---
-// export const getProducts = async (): Promise<Product[]> => {
-//     // Use json-server's _expand feature to include category data, just like the original function did.
-//     const response = await apiClient.get<Product[]>('/products');
-//     return response.data;
-// };
+// ویرایش محصول
+export const updateProduct = async (id: number, formData: FormData): Promise<Product> => {
+  const response = await apiClient.patch(`api/products/${id}`, formData);
+  return response.data;
+};
 
-// export const getProductById = async (id: number): Promise<Product | null> => {
-//     try {
-//         const response = await apiClient.get<Product>(`/products/${id}`);
-//         return response.data;
-//     } catch (error) {
-//         // If axios throws an error (e.g., 404 Not Found), return null.
-//         return null;
-//     }
-// };
+// دریافت یک محصول
+export const getProductById = async (id: number): Promise<Product | null> => {
+  try {
+    const response = await apiClient.get(`api/products/${id}`);
+    return response.data;
+  } catch (e) {
+    return null;
+  }
+};
 
-// export const addProduct = async (productData: Omit<Product, 'id'>): Promise<Product> => {
-//     const response = await apiClient.post<Product>('/products', productData);
-//     return response.data;
-// };
+// دریافت همه محصولات
+export const getProducts = async (): Promise<Product[]> => {
+  const response = await apiClient.get('api/products');
+  return response.data;
+};
 
-// export const updateProduct = async (id: number, productData: Partial<Omit<Product, 'id'>>): Promise<Product | null> => {
-//     const response = await apiClient.patch<Product>(`/products/${id}`, productData);
-//     return response.data;
-// };
-
-// export const deleteProduct = async (id: number): Promise<boolean> => {
-//     await apiClient.delete(`/products/${id}`);
-//     return true; // Success if no error is thrown.
-// };
+// حذف محصول
+export const deleteProduct = async (id: number): Promise<boolean> => {
+  await apiClient.delete(`api/products/${id}`);
+  return true;
+};

@@ -24,6 +24,7 @@ const ProductFormPage: React.FC = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const inputStyle = "w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-300";
     const labelStyle = "block text-sm font-semibold text-gray-700 mb-2";
@@ -70,18 +71,20 @@ const ProductFormPage: React.FC = () => {
         setProduct(prev => ({ ...prev, [name]: name.startsWith('price') || name === 'categoryId' ? Number(value) : value }));
     };
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64String = reader.result as string;
-                setProduct(prev => ({ ...prev, image: base64String }));
-                setImagePreview(base64String);
-            };
-            reader.readAsDataURL(file);
-        }
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  if (e.target.files && e.target.files[0]) {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+
+    // برای نمایش پیش‌نمایش عکس
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
     };
+    reader.readAsDataURL(file);
+  }
+};
+
 
     const removeImage = () => {
         setImagePreview(null);
@@ -91,29 +94,46 @@ const ProductFormPage: React.FC = () => {
             fileInput.value = '';
         }
     };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!product.name || !product.code || !product.categoryId) {
-            addToast('لطفاً همه فیلدهای ستاره‌دار را پر کنید.', 'error');
-            return;
-        }
-        setIsLoading(true);
-        try {
-            if (isEditMode && id) {
-                await api.updateProduct(Number(id), product);
-                addToast('محصول با موفقیت ویرایش شد.', 'success');
-            } else {
-                await api.addProduct(product as Omit<Product, 'id'>);
-                addToast('محصول با موفقیت اضافه شد.', 'success');
-            }
-            navigate('/products');
-        } catch (error) {
-            addToast('عملیات با خطا مواجه شد.', 'error');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  if (!product.name || !product.code || !product.categoryId) {
+    addToast('لطفاً همه فیلدهای ستاره‌دار را پر کنید.', 'error');
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    const formData = new FormData();
+    formData.append('name', product.name || '');
+    formData.append('code', product.code || '');
+    formData.append('categoryId', product.categoryId?.toString() || '');
+    formData.append('price1', (product.price1 || 0).toString());
+    formData.append('price2', (product.price2 || 0).toString());
+    formData.append('priceCustomer', (product.priceCustomer || 0).toString());
+    formData.append('description', product.description || '');
+
+    if (selectedFile) {
+      formData.append('image', selectedFile);
+    }
+
+    if (isEditMode && id) {
+      await api.updateProduct(Number(id), formData);
+      addToast('محصول با موفقیت ویرایش شد.', 'success');
+    } else {
+      await api.addProduct(formData);
+      addToast('محصول با موفقیت اضافه شد.', 'success');
+    }
+
+    navigate('/products');
+  } catch (error) {
+    addToast('عملیات با خطا مواجه شد.', 'error');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
     if (isLoading && isEditMode) {
         return <div className="flex justify-center mt-8"><div className="w-10 h-10 border-4 border-t-transparent border-primary rounded-full animate-spin"></div></div>;

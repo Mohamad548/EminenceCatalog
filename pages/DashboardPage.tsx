@@ -21,7 +21,7 @@ const DashboardPage: React.FC = () => {
         <div className="space-y-8">
             {/* Welcome Header */}
             <div className="text-center md:text-right">
-                <h1 className="text-3xl font-bold text-dark">سلام، مدیر!</h1>
+                <h1 className="text-3xl font-bold text-dark">سلام، فرزاد جان!</h1>
                 <p className="text-gray-600 mt-2">
                     به پنل مدیریت کسری خوش آمدید. از اینجا می‌توانید به بخش‌های مختلف دسترسی داشته باشید.
                 </p>
@@ -74,6 +74,7 @@ const DashboardPage: React.FC = () => {
                         </li>
                     </ul>
                 </div>
+                <h3 className='text-primary mt-6 text-center text-sm'>طراحی و توسعه: محمد محمودی</h3>
             </div>
             
             <ConfirmationModal
