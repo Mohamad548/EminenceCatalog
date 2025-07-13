@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
       server: {
         proxy: {
           '/api': {
-            target: 'http://localhost:3000',  // آدرس و پورت بک‌اند (مثلا Next.js یا Express)
+            target: '/',  // آدرس و پورت بک‌اند (مثلا Next.js یا Express)
             changeOrigin: true,
             secure: false,
           },

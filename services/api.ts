@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:3000',  // آدرس و پورت بک‌اند
+  baseURL: '/',  // آدرس و پورت بک‌اند
 });
 
 export async function login(username: string, password: string) {
