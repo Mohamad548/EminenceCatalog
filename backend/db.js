@@ -1,21 +1,15 @@
-import { login } from "./queries/users";
+import { config } from 'dotenv';
+import pkg from 'pg';
 
+config();
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'فقط POST مجاز است' });
-  }
+const { Pool } = pkg;
 
-  const { username, password } = req.body;
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});
 
-  try {
-    const user = await login(username, password);
-    if (!user) {
-      return res.status(401).json({ error: 'نام کاربری یا رمز عبور اشتباه است' });
-    }
-    res.status(200).json(user);
-  } catch (error) {
-    console.error('خطا در API لاگین:', error);
-    res.status(500).json({ error: 'خطای سرور' });
-  }
+export async function query(text, params) {
+  return pool.query(text, params);
 }
