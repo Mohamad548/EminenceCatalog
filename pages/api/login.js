@@ -1,25 +1,34 @@
-import pool from "@/lib/db.mjs";
+import { query } from "@/db";
 
 
 export default async function handler(req, res) {
-  if (req.method === 'GET') {
-    const { username, password } = req.query;
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
 
-    try {
-      const result = await pool.query(
-        'SELECT id, username, email, full_name FROM users WHERE username = $1 AND password = $2',
-        [username, password]
-      );
+  const { username, password } = req.body;
 
-      if (result.rows.length > 0) {
-        res.status(200).json(result.rows[0]);
-      } else {
-        res.status(401).json({ error: 'Invalid credentials' });
-      }
-    } catch (error) {
-      res.status(500).json({ error: 'Database error on login' });
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password required' });
+  }
+
+  try {
+    const result = await query(
+      'SELECT id, username FROM users WHERE username = $1 AND password = $2',
+      [username, password]
+    );
+
+    const user = result.rows[0];
+
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid username or password' });
     }
-  } else {
-    res.status(405).json({ error: 'Method Not Allowed' });
+
+    // در اینجا می‌توان توکن JWT ساخت یا داده کاربر را برگرداند
+    res.status(200).json(user);
+
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 }
