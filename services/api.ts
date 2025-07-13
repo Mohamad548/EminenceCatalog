@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: '/', // چون API Route های Next.js روی همین دامین هستند
+  baseURL: 'pages/api', // چون API Route های Next.js روی همین دامین هستند
 });
 
 export async function login(username: string, password: string) {
