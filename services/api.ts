@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'pages/', // چون API Route های Next.js روی همین دامین هستند
+  baseURL: 'http://localhost:3000',  // آدرس و پورت بک‌اند
 });
 
 export async function login(username: string, password: string) {

@@ -12,6 +12,15 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
-      }
+      },
+      server: {
+        proxy: {
+          '/api': {
+            target: 'http://localhost:3000',  // آدرس و پورت بک‌اند (مثلا Next.js یا Express)
+            changeOrigin: true,
+            secure: false,
+          },
+        },
+      },
     };
 });
