@@ -1,4 +1,5 @@
-import { login } from '../../queries/users.js';
+import { login } from "@/backend/queries/users";
+
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {

@@ -5,7 +5,7 @@ import { User, Category, Product } from '../types';
 // This client assumes you are running json-server on localhost port 3001.
 // Run `npx json-server --watch db.json --port 3001` in your project root.
 const apiClient = axios.create({
-  baseURL: "https://eminence-catalog.vercel.app/api", // آدرس سرور خود در ورسل
+  baseURL: '/api', // آدرس سرور خود در ورسل
   timeout: 10000, // Timeout به مدت 10 ثانیه
 });
 
