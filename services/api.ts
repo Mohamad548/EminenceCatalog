@@ -39,9 +39,9 @@ export const updateUserCredentials = async (
       payload.newPassword = data.newPassword;
     }
 
-    const response = await apiClient.patch<User>(
-      `/api/users/${data.userId}`,
-      payload
+   const response = await apiClient.put<User>(
+  `/api/users/user/${data.userId}`, // اینجا مسیر را اصلاح کردیم
+  payload
     );
     return response.data;
   } catch (error) {
