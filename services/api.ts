@@ -17,16 +17,31 @@ export async function login(username: string, password: string) {
   }
 }
 
+export interface CredentialsUpdatePayload {
+  userId: string;
+  username: string;
+  currentPassword?: string; // رمز فعلی برای تغییر رمز ضروری است
+  newPassword?: string;     // رمز جدید (اختیاری)
+}
+
 export const updateUserCredentials = async (
   data: CredentialsUpdatePayload
 ): Promise<User | null> => {
   try {
-    const response = await apiClient.patch<User>(
-      `/api/users/${data.userId}/credentials`,
-      {
-        username: data.username,
-        password: data.newPassword,
+    const payload: any = { username: data.username };
+
+    // اگر قصد تغییر رمز داریم، currentPassword و newPassword را ارسال کن
+    if (data.newPassword) {
+      if (!data.currentPassword) {
+        throw new Error('Current password is required to change password');
       }
+      payload.currentPassword = data.currentPassword;
+      payload.newPassword = data.newPassword;
+    }
+
+    const response = await apiClient.patch<User>(
+      `/api/users/${data.userId}`,
+      payload
     );
     return response.data;
   } catch (error) {
