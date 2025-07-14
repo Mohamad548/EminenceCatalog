@@ -1,6 +1,7 @@
+
 import React, { useState, ReactNode } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { HamburgerIcon, CloseIcon, ProductsIcon, CategoryIcon, AddIcon, LogoutIcon, DashboardIcon, BackIcon } from './icons';
+import { HamburgerIcon, CloseIcon, ProductsIcon, CategoryIcon, AddIcon, LogoutIcon, DashboardIcon, BackIcon, SettingsIcon } from './icons';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import ConfirmationModal from './ConfirmationModal';
 
@@ -20,10 +21,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         { to: "/products", text: "مشاهده محصولات", icon: <ProductsIcon />, exact: true },
         { to: "/categories", text: "مدیریت دسته‌بندی", icon: <CategoryIcon />, exact: true },
         { to: "/products/add", text: "افزودن محصول", icon: <AddIcon />, exact: true },
+        { to: "/settings", text: "تنظیمات", icon: <SettingsIcon />, exact: true },
     ];
 
     const activeLinkStyle = {
-        background: 'linear-gradient(to left, #066194, #d2ab67)',
+        background: 'linear-gradient(to left, var(--color-primary), var(--color-gold))',
         color: 'white',
     };
 

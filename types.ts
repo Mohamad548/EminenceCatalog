@@ -22,3 +22,11 @@ export interface Product {
     description: string;
     category?: Category; // For expanded data
 }
+
+export interface CredentialsUpdatePayload {
+    [x: string]: any;
+    userId: number;
+    username: string;
+    currentPassword?: string;
+    newPassword?: string;
+}

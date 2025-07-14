@@ -91,7 +91,7 @@ const ProductsListPage: React.FC = () => {
         </div>
       );
     }
-    console.log(filteredProducts);
+   
     return (
       <div className="space-y-4">
         {filteredProducts.map((product) => (
@@ -102,7 +102,7 @@ const ProductsListPage: React.FC = () => {
             <img
               src={
                 product.image
-                  ? `${BASE_URL}/uploads/${product.image}`
+                  ? `${BASE_URL}uploads/${product.image}`
                   : 'https://www.kasraeminence.com/wp-content/uploads/2024/12/cropped-cropped-2.png'
               }
               alt={product.name}

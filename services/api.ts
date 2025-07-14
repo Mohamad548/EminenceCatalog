@@ -1,19 +1,39 @@
 import { BASE_URL } from '@/pages/URL/url';
-import { Product } from '@/types';
+import { CredentialsUpdatePayload, Product, User } from '@/types';
 import axios from 'axios';
- 
 const apiClient = axios.create({
   baseURL: BASE_URL, // آدرس سرور بک‌اند
 });
 
 export async function login(username: string, password: string) {
   try {
-    const response = await apiClient.post('api/auth/login', { username, password });
+    const response = await apiClient.post('api/auth/login', {
+      username,
+      password,
+    });
     return response.data; // پاسخ موفق (کاربر) یا خطا
   } catch (error) {
     return null;
   }
 }
+
+export const updateUserCredentials = async (
+  data: CredentialsUpdatePayload
+): Promise<User | null> => {
+  try {
+    const response = await apiClient.patch<User>(
+      `/api/users/${data.userId}/credentials`,
+      {
+        username: data.username,
+        password: data.password,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Update credentials API error:', error);
+    return null;
+  }
+};
 
 // --- Categories ---
 export interface Category {
@@ -61,7 +81,10 @@ export const addProduct = async (formData: FormData): Promise<Product> => {
 };
 
 // ویرایش محصول
-export const updateProduct = async (id: number, formData: FormData): Promise<Product> => {
+export const updateProduct = async (
+  id: number,
+  formData: FormData
+): Promise<Product> => {
   const response = await apiClient.patch(`api/products/${id}`, formData);
   return response.data;
 };
