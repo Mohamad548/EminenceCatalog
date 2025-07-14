@@ -51,8 +51,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </Link>
                 <div className="flex items-center gap-2">
                     {location.pathname !== '/dashboard' && location.pathname !== '/' && (
-                        <button onClick={() => navigate(-1)} className="text-light p-2" aria-label="Back">
+                        <button onClick={() => navigate(-1)} className="  flex items-center gap-2  justify-center text-light p-2" aria-label="Back">
                             <BackIcon />
+                            <h3>برگشت</h3>
                         </button>
                     )}
                     <button onClick={() => setIsMenuOpen(true)} className="text-light p-2">

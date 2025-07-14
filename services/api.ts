@@ -1,5 +1,5 @@
 import { BASE_URL } from '@/pages/URL/url';
-import { CredentialsUpdatePayload, Product, User } from '@/types';
+import {  Product, User } from '@/types';
 import axios from 'axios';
 const apiClient = axios.create({
   baseURL: BASE_URL, // آدرس سرور بک‌اند
