@@ -25,7 +25,7 @@ export const updateUserCredentials = async (
       `/api/users/${data.userId}/credentials`,
       {
         username: data.username,
-        password: data.password,
+        password: data.newPassword,
       }
     );
     return response.data;
