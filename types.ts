@@ -20,6 +20,7 @@ export interface Product {
     price2: number;
     priceCustomer: number;
     description: string;
+    category_name?:string
     category?: Category; // For expanded data
 }
 
