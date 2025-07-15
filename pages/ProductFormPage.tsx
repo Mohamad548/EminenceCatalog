@@ -4,6 +4,7 @@ import * as api from '../services/api';
 import { Product, Category } from '../types';
 import { useToast } from '../context/ToastContext';
 import { ImagePlusIcon, XCircleIcon } from '../components/icons';
+import { BASE_URL } from './URL/url';
 
 const ProductFormPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,22 +16,26 @@ const ProductFormPage: React.FC = () => {
     name: '',
     code: '',
     categoryId: undefined,
-    price1: 0,
-    price2: 0,
-    priceCustomer: 0,
+    price_customer: undefined,
     description: '',
     image: '',
-    category_name: '', // ← اضافه شد
+    category_name: '',
+    length: undefined,
+    width: undefined,
+    height: undefined,
+    weight: undefined,
   });
 
+  console.log(product);
   const [categories, setCategories] = useState<Category[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
+  console.log(imagePreview);
   const inputStyle =
     'w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-300';
-  const labelStyle = 'block text-sm font-semibold text-gray-700 mb-2';
+  const labelStyle =
+    'block text-sm font-semibold text-gray-700 mb-2  no-spinner';
 
   const fetchProductData = useCallback(async () => {
     if (isEditMode && id) {
@@ -68,7 +73,6 @@ const ProductFormPage: React.FC = () => {
     fetchProductData();
     fetchCategories();
   }, [fetchProductData, fetchCategories]);
-
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -83,6 +87,14 @@ const ProductFormPage: React.FC = () => {
         ...prev,
         categoryId: catId,
         category_name: selectedCat?.name || '',
+      }));
+    } else if (
+      ['length', 'width', 'height', 'weight', 'priceCustomer'].includes(name)
+    ) {
+      setProduct((prev) => ({
+        ...prev,
+        [name === 'priceCustomer' ? 'price_customer' : name]:
+          value === '' ? undefined : Number(value),
       }));
     } else {
       setProduct((prev) => ({ ...prev, [name]: value }));
@@ -105,6 +117,19 @@ const ProductFormPage: React.FC = () => {
       reader.readAsDataURL(file);
     }
   };
+  useEffect(() => {
+    if (product.category_name && !product.categoryId && categories.length > 0) {
+      const matched = categories.find(
+        (cat) => cat.name === product.category_name
+      );
+      if (matched) {
+        setProduct((prev) => ({
+          ...prev,
+          categoryId: matched.id,
+        }));
+      }
+    }
+  }, [product.category_name, product.categoryId, categories]);
 
   const removeImage = () => {
     setImagePreview(null);
@@ -116,46 +141,61 @@ const ProductFormPage: React.FC = () => {
       fileInput.value = '';
     }
   };
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (!product.name || !product.code || !product.categoryId) {
-      addToast('لطفاً همه فیلدهای ستاره‌دار را پر کنید.', 'error');
-      return;
+  if (!product.name || !product.code || !product.categoryId) {
+    addToast('لطفاً همه فیلدهای ستاره‌دار را پر کنید.', 'error');
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    const formData = new FormData();
+    formData.append('name', product.name || '');
+    formData.append('code', product.code || '');
+    formData.append('categoryId', product.categoryId?.toString() || '');
+    formData.append('category_name', selectedCategory?.name || '');
+
+    if (product.length !== undefined) {
+      formData.append('length', product.length.toString());
+    }
+    if (product.width !== undefined) {
+      formData.append('width', product.width.toString());
+    }
+    if (product.height !== undefined) {
+      formData.append('height', product.height.toString());
+    }
+    if (product.weight !== undefined) {
+      formData.append('weight', product.weight.toString());
+    }
+    if (product.price_customer !== undefined) {
+      formData.append('priceCustomer', product.price_customer.toString());
     }
 
-    setIsLoading(true);
+    formData.append('description', product.description || '');
 
-    try {
-      const formData = new FormData();
-      formData.append('name', product.name || '');
-      formData.append('code', product.code || '');
-      formData.append('categoryId', product.categoryId?.toString() || '');
-      formData.append('category_name', selectedCategory?.name || '');
-      formData.append('price1', (product.price1 || 0).toString());
-      formData.append('price2', (product.price2 || 0).toString());
-      formData.append('priceCustomer', (product.priceCustomer || 0).toString());
-      formData.append('description', product.description || '');
-
-      if (selectedFile) {
-        formData.append('image', selectedFile);
-      }
-
-      if (isEditMode && id) {
-        await api.updateProduct(Number(id), formData);
-        addToast('محصول با موفقیت ویرایش شد.', 'success');
-      } else {
-        await api.addProduct(formData);
-        addToast('محصول با موفقیت اضافه شد.', 'success');
-      }
-
-      navigate('/products');
-    } catch (error) {
-      addToast('عملیات با خطا مواجه شد.', 'error');
-    } finally {
-      setIsLoading(false);
+    if (selectedFile) {
+      formData.append('image', selectedFile);
     }
-  };
+
+    if (isEditMode && id) {
+      await api.updateProduct(Number(id), formData);
+      addToast('محصول با موفقیت ویرایش شد.', 'success');
+    } else {
+      await api.addProduct(formData);
+      addToast('محصول با موفقیت اضافه شد.', 'success');
+    }
+
+    navigate('/products');
+  } catch (error) {
+    addToast('عملیات با خطا مواجه شد.', 'error');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   if (isLoading && isEditMode) {
     return (
@@ -164,6 +204,29 @@ const ProductFormPage: React.FC = () => {
       </div>
     );
   }
+  const formatNumber = (num?: number) => {
+    if (num === undefined || num === null) return '';
+    return num.toLocaleString('en-US'); // یا 'fa-IR' برای فارسی
+  };
+
+  const parseNumber = (str: string) => {
+    // حذف کاما یا فاصله و تبدیل به عدد
+    return Number(str.replace(/[,٬\s]/g, ''));
+  };
+
+  const handleNumberChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: keyof Product
+  ) => {
+    const inputVal = e.target.value;
+    const numericVal = parseNumber(inputVal);
+
+    if (inputVal === '') {
+      setProduct((prev) => ({ ...prev, [field]: undefined }));
+    } else if (!isNaN(numericVal)) {
+      setProduct((prev) => ({ ...prev, [field]: numericVal }));
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -177,11 +240,15 @@ const ProductFormPage: React.FC = () => {
         <div className="col-span-1 md:col-span-2">
           <label className={labelStyle}>تصویر محصول</label>
           {imagePreview ? (
-            <div className="mt-2 relative w-full h-64 sm:w-80 sm:h-80 mx-auto">
+            <div className="mt-2 relative h-72  w-full">
               <img
-                src={imagePreview}
+                src={
+                  imagePreview?.startsWith('data:')
+                    ? imagePreview // base64 preview
+                    : `${BASE_URL}/uploads/${imagePreview}` // file name from DB
+                }
                 alt="Preview"
-                className="w-full h-full object-cover rounded-xl shadow-md"
+                className="w-full h-full object-contain rounded-xl shadow-md"
               />
               <button
                 type="button"
@@ -247,7 +314,7 @@ const ProductFormPage: React.FC = () => {
             <label className={labelStyle}>دسته‌بندی *</label>
             <select
               name="categoryId"
-              value={product.categoryId}
+              value={product.categoryId?.toString() || ''}
               onChange={handleChange}
               className={inputStyle}
               required
@@ -263,37 +330,63 @@ const ProductFormPage: React.FC = () => {
 
           <div className="md:col-span-2 pt-4">
             <h3 className="text-lg font-bold text-dark border-b pb-2 mb-4">
-              اطلاعات قیمت
+              ابعاد
             </h3>
           </div>
 
           <div>
-            <label className={labelStyle}>قیمت همکار ۱</label>
+            <label className={labelStyle}>طول (cm)</label>
             <input
-              type="number"
-              name="price1"
-              value={product.price1}
-              onChange={handleChange}
+              type="text"
+              name="length"
+              value={formatNumber(product.length)}
+              onChange={(e) => handleNumberChange(e, 'length')}
               className={inputStyle}
             />
           </div>
           <div>
-            <label className={labelStyle}>قیمت همکار ۲</label>
+            <label className={labelStyle}>عرض (cm)</label>
             <input
-              type="number"
-              name="price2"
-              value={product.price2}
-              onChange={handleChange}
+              type="text"
+              name="width"
+              value={formatNumber(product.width)}
+              onChange={(e) => handleNumberChange(e, 'width')}
               className={inputStyle}
             />
+          </div>
+          <div>
+            <label className={labelStyle}>ارتفاع (cm)</label>
+
+            <input
+              type="text"
+              name="height"
+              value={formatNumber(product.height)}
+              onChange={(e) => handleNumberChange(e, 'height')}
+              className={inputStyle}
+            />
+          </div>
+          <div>
+            <label className={labelStyle}>وزن (g)</label>
+            <input
+              type="text"
+              name="weight"
+              value={formatNumber(product.weight)}
+              onChange={(e) => handleNumberChange(e, 'weight')}
+              className={inputStyle}
+            />
+          </div>
+          <div className="md:col-span-2 pt-4">
+            <h3 className="text-lg font-bold text-dark border-b pb-2 mb-4">
+              اطلاعات قیمت
+            </h3>
           </div>
           <div>
             <label className={labelStyle}>قیمت مشتری</label>
             <input
-              type="number"
+              type="text"
               name="priceCustomer"
-              value={product.priceCustomer}
-              onChange={handleChange}
+              value={formatNumber(product.price_customer)}
+              onChange={(e) => handleNumberChange(e, 'price_customer')}
               className={inputStyle}
             />
           </div>

@@ -91,7 +91,6 @@ const ProductsListPage: React.FC = () => {
         </div>
       );
     }
-    console.log(filteredProducts);
     return (
       <div className="space-y-4">
         {filteredProducts.map((product) => (
@@ -102,7 +101,7 @@ const ProductsListPage: React.FC = () => {
             <img
               src={
                 product.image
-                  ? `${BASE_URL}uploads/${product.image}`
+                  ? `${BASE_URL}/uploads/${product.image}`
                   : 'https://www.kasraeminence.com/wp-content/uploads/2024/12/cropped-cropped-2.png'
               }
               alt={product.name}
@@ -115,25 +114,24 @@ const ProductsListPage: React.FC = () => {
                     {product.name}
                   </h2>
                   <p className="text-sm text-gray-500">کد: {product.code}</p>
+                  <div className="mt-2 font-semibold text-gray-700">ابعاد:</div>
+
+                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-600 mt-1">
+                    <span>طول: {product.length} cm</span>
+                    <span>عرض: {product.width} cm</span>
+                    <span>ارتفاع: {product.height} cm</span>
+                    <span>وزن: {product.weight} g</span>
+                  </div>
                 </div>
+
                 <span className="text-xs font-semibold bg-blue-100 text-primary py-1 px-3 rounded-full">
                   {product.category_name || 'بدون دسته‌بندی'}
                 </span>
               </div>
               <div className="mt-4 space-y-2 text-sm">
                 <p>
-                  <span className="font-semibold">قیمت همکار ۱:</span>{' '}
-                  {formatPrice(product.price1)}
-                </p>
-                <p>
-                  <span className="font-semibold">قیمت همکار ۲:</span>{' '}
-                  {formatPrice(product.price2)}
-                </p>
-                <p>
-                  <span className="font-semibold text-primary">
-                    قیمت مشتری:
-                  </span>{' '}
-                  {formatPrice(product.priceCustomer)}
+                  <span className="font-semibold text-primary">قیمت :</span>{' '}
+                  {formatPrice(product.price_customer || 0)}
                 </p>
               </div>
               <div className="mt-4 pt-4 border-t border-gray-200 flex justify-end gap-2">

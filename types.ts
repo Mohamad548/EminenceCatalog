@@ -11,18 +11,20 @@ export interface Category {
 }
 
 export interface Product {
-    id: number;
-    image: string; // URL or base64
-    code: string;
-    name: string;
-    categoryId: number;
-    price1: number;
-    price2: number;
-    priceCustomer: number;
-    description: string;
-    category_name?:string
-    category?: Category; // For expanded data
+  id?: number;
+  name?: string;
+  code?: string;
+  categoryId?: number;
+  category_name?: string; // حتما رشته باشد
+  price_customer?: number;
+  description?: string;
+  image?: string;
+  length?: number;
+  width?: number;
+  height?: number;
+  weight?: number;
 }
+
 
 export interface CredentialsUpdatePayload {
     [x: string]: any;
