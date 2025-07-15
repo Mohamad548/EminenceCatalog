@@ -91,7 +91,7 @@ const ProductsListPage: React.FC = () => {
         </div>
       );
     }
-   
+    console.log(filteredProducts);
     return (
       <div className="space-y-4">
         {filteredProducts.map((product) => (
@@ -117,7 +117,7 @@ const ProductsListPage: React.FC = () => {
                   <p className="text-sm text-gray-500">کد: {product.code}</p>
                 </div>
                 <span className="text-xs font-semibold bg-blue-100 text-primary py-1 px-3 rounded-full">
-                  {product.category?.name || 'بدون دسته‌بندی'}
+                  {product.category_name || 'بدون دسته‌بندی'}
                 </span>
               </div>
               <div className="mt-4 space-y-2 text-sm">
