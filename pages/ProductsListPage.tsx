@@ -15,7 +15,7 @@ const ProductsListPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const { addToast } = useToast();
-  console.log(products);
+console.log(products)
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -136,9 +136,7 @@ const ProductsListPage: React.FC = () => {
               </div>
               <div className="mt-4 pt-4 border-t border-gray-200 flex justify-end gap-2">
                 <button
-                  onClick={() =>
-                    window.open(`/products/edit/${product.id}`, '_blank')
-                  }
+                  onClick={() => navigate(`/products/edit/${product.id}`)}
                   className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
                 >
                   <EditIcon />
