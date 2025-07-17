@@ -125,7 +125,7 @@ console.log(products)
                 </div>
 
                 <span className="text-xs font-semibold bg-blue-100 text-primary py-1 px-3 rounded-full">
-                  {product.category_name || 'بدون دسته‌بندی'}
+                  {product.category_name ||'بدون دسته‌بندی'}
                 </span>
               </div>
               <div className="mt-4 space-y-2 text-sm">
