@@ -101,7 +101,7 @@ console.log(products)
             <img
               src={
                 product.image
-                  ? `${BASE_URL}/uploads/${product.image}`
+                  ? product.image
                   : 'https://www.kasraeminence.com/wp-content/uploads/2024/12/cropped-cropped-2.png'
               }
               alt={product.name}
@@ -135,12 +135,14 @@ console.log(products)
                 </p>
               </div>
               <div className="mt-4 pt-4 border-t border-gray-200 flex justify-end gap-2">
-                <button
-                  onClick={() => navigate(`/products/edit/${product.id}`)}
-                  className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
-                >
-                  <EditIcon />
-                </button>
+              <a
+  href={`#/products/edit/${product.id}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
+>
+  <EditIcon />
+</a>
                 <button
                   onClick={() => handleDeleteClick(product)}
                   className="p-2 text-red-500 hover:bg-red-100 rounded-full transition-colors"

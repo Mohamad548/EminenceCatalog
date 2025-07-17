@@ -245,7 +245,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 src={
                   imagePreview?.startsWith('data:')
                     ? imagePreview // base64 preview
-                    : `${BASE_URL}/uploads/${imagePreview}` // file name from DB
+                    : imagePreview // file name from DB
                 }
                 alt="Preview"
                 className="w-full h-full object-contain rounded-xl shadow-md"
