@@ -120,7 +120,7 @@ console.log(products)
                     <span>طول: {product.length} cm</span>
                     <span>عرض: {product.width} cm</span>
                     <span>ارتفاع: {product.height} cm</span>
-                    <span>وزن: {product.weight} g</span>
+                    <span>وزن: {product.weight} kg</span>
                   </div>
                 </div>
 
