@@ -366,7 +366,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             />
           </div>
           <div>
-            <label className={labelStyle}>وزن (g)</label>
+            <label className={labelStyle}>وزن (kg)</label>
             <input
               type="text"
               name="weight"
