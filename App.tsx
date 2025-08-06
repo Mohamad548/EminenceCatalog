@@ -7,14 +7,12 @@ import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import ProductsListPage from './pages/ProductsListPage';
-import ProductFormPage from './pages/ProductFormPage';
 import CategoriesPage from './pages/CategoriesPage';
 import DashboardPage from './pages/DashboardPage';
-
 import Layout from './components/Layout';
 import Toast from './components/Toast';
 import SettingsPage from './pages/URL/SettingsPage';
-
+import ProductFormPage from './pages/ProductFormPage';
 const App: React.FC = () => {
     return (
         <AuthProvider>

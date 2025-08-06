@@ -5,7 +5,6 @@ import { Product } from '../types';
 import { useToast } from '../context/ToastContext';
 import { EditIcon, DeleteIcon, AddIcon } from '../components/icons';
 import ConfirmationModal from '../components/ConfirmationModal';
-import { BASE_URL } from './URL/url';
 
 const ProductsListPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);

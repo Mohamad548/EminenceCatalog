@@ -4,8 +4,6 @@ import * as api from '../services/api';
 import { Product, Category } from '../types';
 import { useToast } from '../context/ToastContext';
 import { ImagePlusIcon, XCircleIcon } from '../components/icons';
-import { BASE_URL } from './URL/url';
-
 const ProductFormPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const isEditMode = Boolean(id);
