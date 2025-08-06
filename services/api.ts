@@ -101,6 +101,7 @@ export const updateProduct = async (
   formData: FormData
 ): Promise<Product> => {
   const response = await apiClient.patch(`api/products/${id}`, formData);
+  console.log('✅ محصول اضافه شد:', response);
   return response.data;
 };
 

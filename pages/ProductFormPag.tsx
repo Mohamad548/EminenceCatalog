@@ -174,8 +174,11 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     formData.append('description', product.description || '');
 
-    if (selectedFile) {
-      formData.append('image', selectedFile);
+    // ارسال چند فایل:
+    if (selectedFiles && selectedFiles.length > 0) {
+      selectedFiles.forEach((file) => {
+        formData.append('images', file); // دقت کن اسم کلید 'images' باشه
+      });
     }
 
     if (isEditMode && id) {
@@ -193,6 +196,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     setIsLoading(false);
   }
 };
+
 
 
   if (isLoading && isEditMode) {
