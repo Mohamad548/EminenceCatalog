@@ -11,14 +11,15 @@ export interface Category {
 }
 
 export interface Product {
+  [x: string]: any;  // یا string | number | undefined
   id?: number;
   name?: string;
   code?: string;
   categoryId?: number;
-  category_name?: string; // حتما رشته باشد
+  category_name?: string;
   price_customer?: number;
   description?: string;
-  image?: string;
+  image?: string[];
   length?: number;
   width?: number;
   height?: number;

@@ -15,51 +15,78 @@ const ProductFormPage: React.FC = () => {
   const { addToast } = useToast();
 
   const [product, setProduct] = useState<Partial<Product>>({
-    name: '', code: '', description: '',
-    categoryId: undefined, image: '', category_name: '',
-    length: undefined, width: undefined, height: undefined,
-    weight: undefined, price_customer: undefined
+    name: '',
+    code: '',
+    description: '',
+    categoryId: undefined,
+    category_name: '',
+    length: undefined,
+    width: undefined,
+    height: undefined,
+    weight: undefined,
+    price_customer: undefined,
   });
 
   const [categories, setCategories] = useState<Category[]>([]);
-const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]); // تصاویر قبلی
   const [isLoading, setIsLoading] = useState(false);
+  const [combinedPreviews, setCombinedPreviews] = useState<string[]>([]);
+console.log('selectedFiles',selectedFiles)
+  const selectedCategory = categories.find((cat) => cat.id === product.categoryId);
 
-  const selectedCategory = categories.find(cat => cat.id === product.categoryId);
+  const fetchProductData = useCallback(async () => {
+    if (isEditMode && id) {
+      setIsLoading(true);
+      try {
+        const fetched = await api.getProductById(Number(id));
+        if (fetched) {
+          setProduct(fetched);
 
-const fetchProductData = useCallback(async () => {
-  if (isEditMode && id) {
-    setIsLoading(true);
-    try {
-      const fetched = await api.getProductById(Number(id));
-      if (fetched) {
-        setProduct(fetched);
-
-        // اگر محصول چند تصویر دارد فرض کنیم fetched.images آرایه است:
-        if (fetched.images && Array.isArray(fetched.images)) {
-          setImagePreviews(fetched.images); // آرایه تصاویر پیش‌نمایش
-        } else if (fetched.image) {
-          // اگر فقط یک تصویر است:
-          setImagePreviews([fetched.image]);
+      if (fetched.image && Array.isArray(fetched.image)) {
+  setImagePreviews(fetched.image);
+  setExistingImages(fetched.image);
+} else {
+  setImagePreviews([]);
+  setExistingImages([]);
+}
+        } else {
+          addToast('محصول یافت نشد.', 'error');
+          navigate('/products');
         }
-      } else {
-        addToast('محصول یافت نشد.', 'error');
-        navigate('/products');
+      } catch (error) {
+        addToast('خطا در دریافت محصول.', 'error');
+      } finally {
+        setIsLoading(false);
       }
-    } catch {
-      addToast('خطا در دریافت محصول.', 'error');
-    } finally {
-      setIsLoading(false);
     }
-  }
-}, [id, isEditMode, navigate, addToast]);
+  }, [id, isEditMode, navigate, addToast]);
+
+  useEffect(() => {
+    // ساخت base64 برای selectedFiles و اضافه کردن existingImages
+    const generatePreviews = async () => {
+      const filesPreviews = await Promise.all(
+        selectedFiles.map(file => 
+          new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(file);
+          })
+        )
+      );
+      setCombinedPreviews([...existingImages, ...filesPreviews]);
+    };
+
+    generatePreviews();
+  }, [existingImages, selectedFiles]);
+
   const fetchCategories = useCallback(async () => {
     try {
       const data = await api.getCategories();
       setCategories(data);
       if (!isEditMode && data.length > 0) {
-        setProduct(p => ({ ...p, categoryId: data[0].id }));
+        setProduct((p) => ({ ...p, categoryId: data[0].id }));
       }
     } catch {
       addToast('خطا در دریافت دسته‌بندی‌ها', 'error');
@@ -71,9 +98,28 @@ const fetchProductData = useCallback(async () => {
     fetchCategories();
   }, [fetchProductData, fetchCategories]);
 
+  // جلوگیری از اضافه شدن فایل تکراری
+  const handleAddFiles = (files: File[]) => {
+    setSelectedFiles(prev => {
+      const existingFilesMap = new Map(prev.map(f => [f.name + f.size, true]));
+      const newFiles = files.filter(f => !existingFilesMap.has(f.name + f.size));
+      return [...prev, ...newFiles];
+    });
+  };
+
+  const handleRemoveImage = (index: number) => {
+    if (index < existingImages.length) {
+      // حذف از تصاویر قبلی
+      setExistingImages(prev => prev.filter((_, i) => i !== index));
+    } else {
+      // حذف از فایل‌های جدید
+      const fileIndex = index - existingImages.length;
+      setSelectedFiles(prev => prev.filter((_, i) => i !== fileIndex));
+    }
+  };
+
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-
   if (!product.name || !product.code || !product.categoryId) {
     addToast('فیلدهای ستاره‌دار الزامی هستند.', 'error');
     return;
@@ -92,15 +138,26 @@ const handleSubmit = async (e: React.FormEvent) => {
     });
     formData.append('description', product.description || '');
 
-    // اضافه کردن همه فایل‌های انتخاب شده
+    // فایل‌های جدید
     selectedFiles.forEach((file) => {
-      formData.append('images', file);
+      formData.append('images', file); // توجه کن نام فیلد 'images' باشه (چون در multer این نام را استفاده کردی)
     });
-console.log(selectedFiles)
-    if (isEditMode) {
+
+    // ارسال آرایه existingImages به صورت JSON رشته شده
+    formData.append('existingImages', JSON.stringify(existingImages));
+
+    // لاگ فرم دیتا برای دیباگ
+    for (const [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(key, value.name, value.type, value.size, 'bytes');
+      } else {
+        console.log(key, value);
+      }
+    }
+
+    if (isEditMode && id) {
       await api.updateProduct(Number(id), formData);
     } else {
-      
       await api.addProduct(formData);
     }
 
@@ -118,12 +175,11 @@ console.log(selectedFiles)
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-dark">{isEditMode ? 'ویرایش محصول' : 'افزودن محصول'}</h1>
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-lg space-y-6">
-<ImageUploader
-  imagePreviews={imagePreviews}
-  setImagePreviews={setImagePreviews}
-  setSelectedFiles={setSelectedFiles}
-  setProduct={setProduct}
-/>
+        <ImageUploader
+          previews={combinedPreviews}
+          onRemove={handleRemoveImage}
+          onAddFiles={handleAddFiles}
+        />
         <FormInputs
           product={product}
           setProduct={setProduct}
