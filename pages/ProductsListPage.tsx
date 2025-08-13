@@ -110,7 +110,6 @@ const filteredProducts = products
         </div>
       );
     }
-
     return (
 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
   {filteredProducts.map((product) => (

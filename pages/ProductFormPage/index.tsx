@@ -33,8 +33,10 @@ const ProductFormPage: React.FC = () => {
   const [existingImages, setExistingImages] = useState<string[]>([]); // تصاویر قبلی
   const [isLoading, setIsLoading] = useState(false);
   const [combinedPreviews, setCombinedPreviews] = useState<string[]>([]);
-console.log('selectedFiles',selectedFiles)
-  const selectedCategory = categories.find((cat) => cat.id === product.categoryId);
+  console.log('selectedFiles', selectedFiles);
+  const selectedCategory = categories.find(
+    (cat) => cat.id === product.categoryId
+  );
 
   const fetchProductData = useCallback(async () => {
     if (isEditMode && id) {
@@ -44,13 +46,13 @@ console.log('selectedFiles',selectedFiles)
         if (fetched) {
           setProduct(fetched);
 
-      if (fetched.image && Array.isArray(fetched.image)) {
-  setImagePreviews(fetched.image);
-  setExistingImages(fetched.image);
-} else {
-  setImagePreviews([]);
-  setExistingImages([]);
-}
+          if (fetched.image && Array.isArray(fetched.image)) {
+            setImagePreviews(fetched.image);
+            setExistingImages(fetched.image);
+          } else {
+            setImagePreviews([]);
+            setExistingImages([]);
+          }
         } else {
           addToast('محصول یافت نشد.', 'error');
           navigate('/products');
@@ -67,12 +69,13 @@ console.log('selectedFiles',selectedFiles)
     // ساخت base64 برای selectedFiles و اضافه کردن existingImages
     const generatePreviews = async () => {
       const filesPreviews = await Promise.all(
-        selectedFiles.map(file => 
-          new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.readAsDataURL(file);
-          })
+        selectedFiles.map(
+          (file) =>
+            new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.readAsDataURL(file);
+            })
         )
       );
       setCombinedPreviews([...existingImages, ...filesPreviews]);
@@ -100,9 +103,13 @@ console.log('selectedFiles',selectedFiles)
 
   // جلوگیری از اضافه شدن فایل تکراری
   const handleAddFiles = (files: File[]) => {
-    setSelectedFiles(prev => {
-      const existingFilesMap = new Map(prev.map(f => [f.name + f.size, true]));
-      const newFiles = files.filter(f => !existingFilesMap.has(f.name + f.size));
+    setSelectedFiles((prev) => {
+      const existingFilesMap = new Map(
+        prev.map((f) => [f.name + f.size, true])
+      );
+      const newFiles = files.filter(
+        (f) => !existingFilesMap.has(f.name + f.size)
+      );
       return [...prev, ...newFiles];
     });
   };
@@ -110,71 +117,76 @@ console.log('selectedFiles',selectedFiles)
   const handleRemoveImage = (index: number) => {
     if (index < existingImages.length) {
       // حذف از تصاویر قبلی
-      setExistingImages(prev => prev.filter((_, i) => i !== index));
+      setExistingImages((prev) => prev.filter((_, i) => i !== index));
     } else {
       // حذف از فایل‌های جدید
       const fileIndex = index - existingImages.length;
-      setSelectedFiles(prev => prev.filter((_, i) => i !== fileIndex));
+      setSelectedFiles((prev) => prev.filter((_, i) => i !== fileIndex));
     }
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!product.name || !product.code || !product.categoryId) {
-    addToast('فیلدهای ستاره‌دار الزامی هستند.', 'error');
-    return;
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!product.name || !product.code || !product.categoryId) {
+      addToast('فیلدهای ستاره‌دار الزامی هستند.', 'error');
+      return;
+    }
 
-  setIsLoading(true);
-  try {
-    const formData = new FormData();
-    formData.append('name', product.name || '');
-    formData.append('code', product.code || '');
-    formData.append('categoryId', product.categoryId?.toString() || '');
-    formData.append('category_name', selectedCategory?.name || '');
-    ['length', 'width', 'height', 'weight', 'price_customer'].forEach((key) => {
-      const value = product[key as keyof Product];
-      if (value !== undefined) formData.append(key, String(value));
-    });
-    formData.append('description', product.description || '');
+    setIsLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('name', product.name || '');
+      formData.append('code', product.code || '');
+      formData.append('categoryId', product.categoryId?.toString() || '');
+      formData.append('category_name', selectedCategory?.name || '');
+      ['length', 'width', 'height', 'weight', 'price_customer'].forEach(
+        (key) => {
+          const value = product[key as keyof Product];
+          if (value !== undefined) formData.append(key, String(value));
+        }
+      );
+      formData.append('description', product.description || '');
+      // فایل‌های جدید
+      selectedFiles.forEach((file) => {
+        formData.append('images', file); // توجه کن نام فیلد 'images' باشه (چون در multer این نام را استفاده کردی)
+      });
 
-    // فایل‌های جدید
-    selectedFiles.forEach((file) => {
-      formData.append('images', file); // توجه کن نام فیلد 'images' باشه (چون در multer این نام را استفاده کردی)
-    });
+      // ارسال آرایه existingImages به صورت JSON رشته شده
+      formData.append('existingImages', JSON.stringify(existingImages));
 
-    // ارسال آرایه existingImages به صورت JSON رشته شده
-    formData.append('existingImages', JSON.stringify(existingImages));
-
-    // لاگ فرم دیتا برای دیباگ
-    for (const [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        console.log(key, value.name, value.type, value.size, 'bytes');
-      } else {
-        console.log(key, value);
+      // لاگ فرم دیتا برای دیباگ
+      for (const [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          console.log(key, value.name, value.type, value.size, 'bytes');
+        } else {
+          console.log(key, value);
+        }
       }
+
+      if (isEditMode && id) {
+        await api.updateProduct(Number(id), formData);
+      } else {
+        await api.addProduct(formData);
+      }
+
+      addToast(isEditMode ? 'ویرایش موفق' : 'افزودن موفق', 'success');
+      navigate('/products');
+    } catch {
+      addToast('عملیات با خطا مواجه شد.', 'error');
+    } finally {
+      setIsLoading(false);
     }
-
-    if (isEditMode && id) {
-      await api.updateProduct(Number(id), formData);
-    } else {
-      await api.addProduct(formData);
-    }
-
-    addToast(isEditMode ? 'ویرایش موفق' : 'افزودن موفق', 'success');
-    navigate('/products');
-  } catch {
-    addToast('عملیات با خطا مواجه شد.', 'error');
-  } finally {
-    setIsLoading(false);
-  }
-};
-
+  };
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-dark">{isEditMode ? 'ویرایش محصول' : 'افزودن محصول'}</h1>
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-lg space-y-6">
+      <h1 className="text-3xl font-bold text-dark">
+        {isEditMode ? 'ویرایش محصول' : 'افزودن محصول'}
+      </h1>
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-xl shadow-lg space-y-6"
+      >
         <ImageUploader
           previews={combinedPreviews}
           onRemove={handleRemoveImage}
