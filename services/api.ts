@@ -45,7 +45,7 @@ export const updateUserCredentials = async (
     );
     return response.data;
   } catch (error) {
-    console.error('Update credentials API error:', error);
+  
     return null;
   }
 };
@@ -62,7 +62,6 @@ export const getCategories = async (): Promise<Category[] | null> => {
     const response = await apiClient.get('api/categories');
     return response.data;
   } catch (error) {
-    console.error('Failed to get categories:', error);
     return null;
   }
 };
@@ -101,7 +100,7 @@ export const updateProduct = async (
   formData: FormData
 ): Promise<Product> => {
   const response = await apiClient.patch(`api/products/${id}`, formData);
-  console.log('✅ محصول اضافه شد:', response);
+
   return response.data;
 };
 

@@ -33,7 +33,7 @@ const ProductFormPage: React.FC = () => {
   const [existingImages, setExistingImages] = useState<string[]>([]); // تصاویر قبلی
   const [isLoading, setIsLoading] = useState(false);
   const [combinedPreviews, setCombinedPreviews] = useState<string[]>([]);
-  console.log('selectedFiles', selectedFiles);
+
   const selectedCategory = categories.find(
     (cat) => cat.id === product.categoryId
   );
@@ -154,15 +154,6 @@ const ProductFormPage: React.FC = () => {
       // ارسال آرایه existingImages به صورت JSON رشته شده
       formData.append('existingImages', JSON.stringify(existingImages));
 
-      // لاگ فرم دیتا برای دیباگ
-      for (const [key, value] of formData.entries()) {
-        if (value instanceof File) {
-          console.log(key, value.name, value.type, value.size, 'bytes');
-        } else {
-          console.log(key, value);
-        }
-      }
-
       if (isEditMode && id) {
         await api.updateProduct(Number(id), formData);
       } else {
@@ -184,7 +175,9 @@ const ProductFormPage: React.FC = () => {
         {isEditMode ? 'ویرایش محصول' : 'افزودن محصول'}
       </h1>
       <form
-        onSubmit={handleSubmit}
+        onSubmit={(e) => {
+          handleSubmit(e);
+        }}
         className="bg-white p-6 rounded-xl shadow-lg space-y-6"
       >
         <ImageUploader

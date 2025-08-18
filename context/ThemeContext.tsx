@@ -28,7 +28,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 return { ...defaultTheme, ...JSON.parse(storedTheme) };
             }
         } catch (error) {
-            console.error("Failed to parse theme from localStorage", error);
+      
         }
         return defaultTheme;
     });
@@ -47,7 +47,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         try {
             localStorage.setItem('app-theme', JSON.stringify(theme));
         } catch (error) {
-            console.error("Failed to save theme to localStorage", error);
+
         }
     }, [theme]);
     

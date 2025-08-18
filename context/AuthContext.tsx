@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 setUser(JSON.parse(storedUser));
             }
         } catch (error) {
-            console.error("Failed to parse user from localStorage", error);
+        
             localStorage.removeItem('user');
         }
         setIsLoading(false);
@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 return true;
             }
         } catch (error) {
-            console.error("Login failed", error);
+
         }
         setIsLoading(false);
         return false;

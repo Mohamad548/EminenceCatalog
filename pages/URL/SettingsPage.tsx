@@ -80,7 +80,7 @@ const SettingsPage: React.FC = () => {
       }
     } catch (error) {
       addToast('بروزرسانی اطلاعات با خطا مواجه شد.', 'error');
-      console.error('Update credentials error:', error);
+
     } finally {
       setIsSubmitting(false);
     }

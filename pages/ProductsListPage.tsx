@@ -163,7 +163,7 @@ const filteredProducts = products
       <div className="flex flex-col justify-center gap-1 p-2">
         <a
           href={`#/products/edit/${product.id}`}
-          target="_blank"
+          // target="_blank"
           rel="noopener noreferrer"
           className="p-1 rounded-full text-blue-600 hover:bg-blue-100 transition"
           title="ویرایش محصول"
